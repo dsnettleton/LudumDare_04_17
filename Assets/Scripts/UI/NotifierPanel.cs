@@ -14,10 +14,10 @@ public class NotifierPanel : EventObserver {
 			default:
 				break;
 			case GameEvent.BallOutOfBounds:
-				badNewsDisplay.show("Ball out of bounds!");
+				badNewsDisplay.show("Ball is Out of Bounds!");
 				break;
 			case GameEvent.InvalidPosition:
-				badNewsDisplay.show("Cannot warp to that position.");
+				badNewsDisplay.show("Cannot Warp to That Position.");
 				break;
 			case GameEvent.LevelWon:
 				//	data = numStrokes
@@ -26,6 +26,16 @@ public class NotifierPanel : EventObserver {
 				} else {
 					goodNewsDisplay.showStatic("Level Won!");
 				}
+				break;
+			case GameEvent.LevelLoaded:
+				goodNewsDisplay.hide();
+				badNewsDisplay.hide();
+				break;
+			case GameEvent.PlanetKillerInitiated:
+				goodNewsDisplay.show("Planet Killer Initiated. Please Select a Target Planet.");
+				break;
+			case GameEvent.PlanetKillerCanceled:
+				goodNewsDisplay.show("Planet Killer Canceled.");
 				break;
 		}//	End event type switch
 	}//	End public EventObserver method OnNotify

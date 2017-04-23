@@ -16,7 +16,7 @@ public class SpaceShip : MonoBehaviour {
 
 	private const float MIN_RETICULE_LENGTH = 0.5f;
 	private const float MAX_RETICULE_LENGTH = 1.5f;
-	private const float LAUNCH_POWER = 30.0f;
+	private const float LAUNCH_POWER = 40.0f;
 	private const float WARP_DELAY = 0.5f;
 
 	private const int BALL_POOL_SIZE = 5;
@@ -96,9 +96,8 @@ public class SpaceShip : MonoBehaviour {
 	private void fire(Vector2 shotVector) {
 		GolfBall myBall = nextInPool();
 		if (myBall == null) { return; }
-		++numStrokes;
+		incrementStrokes();
 		playLaunchClip();
-		EventHandler.raiseEvent(GameEvent.StrokeTaken, numStrokes);
 		myBall.launch(transform.position, shotVector * LAUNCH_POWER, this);
 		Game.setState(Game.State.WaitingOnBall);
 	}//	End private method fire
@@ -120,6 +119,11 @@ public class SpaceShip : MonoBehaviour {
 		mouseVec *= Mathf.Lerp(0.1f, 1.0f, dragDistance / mouseDragRadius);
 		return -mouseVec;
 	}//	End private method getShotVector
+
+	public void incrementStrokes(int numToIncrement = 1) {
+		numStrokes += numToIncrement;
+		EventHandler.raiseEvent(GameEvent.StrokeTaken, numStrokes);
+	}//	End public method incrementStrokes
 
 	private GolfBall nextInPool() {
 		int attempts = 0;

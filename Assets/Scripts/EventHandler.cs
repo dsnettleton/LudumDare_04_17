@@ -10,7 +10,11 @@ public enum GameEvent {
 	InvalidPosition,
 	LevelWon,
 	GamePaused,
-	LevelLoaded
+	LevelLoaded,
+	VolumeChanged,
+	PlanetKillerInitiated,
+	PlanetKillerCanceled,
+	PlanetDestroyed
 }//	End enum GameEvent
 
 public class EventHandler {

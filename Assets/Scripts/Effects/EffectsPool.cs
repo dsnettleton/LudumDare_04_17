@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class EffectsPool : MonoBehaviour {
 
-	public const int NUM_EFFECTS = 1;
+	public const int NUM_EFFECTS = 2;
 	public enum Effect : int {
-		BallExplosion = 0
+		BallExplosion = 0,
+		PlanetDestroyed = 1
 	}//	End public Effect enum
 
 	public const int POOL_SIZE_PER_EFFECT = 10;
@@ -28,6 +29,13 @@ public class EffectsPool : MonoBehaviour {
 		GameObject ballExplosionPrefab = (GameObject)Resources.Load("Prefabs/Effects/BallExplosion");
 		for (int i = 0; i < POOL_SIZE_PER_EFFECT; ++i) {
 			effects[currentEffect, i] = GameObject.Instantiate(ballExplosionPrefab, transform);
+			effects[currentEffect, i].SetActive(false);
+		}
+
+		currentEffect = (int)Effect.PlanetDestroyed;
+		GameObject planetDestroyedPrefab = (GameObject)Resources.Load("Prefabs/Effects/PlanetDestroyed");
+		for (int i = 0; i < POOL_SIZE_PER_EFFECT; ++i) {
+			effects[currentEffect, i] = GameObject.Instantiate(planetDestroyedPrefab, transform);
 			effects[currentEffect, i].SetActive(false);
 		}
 	}//	End Unity method Awake
@@ -52,6 +60,15 @@ public class EffectsPool : MonoBehaviour {
 		GameObject currentEffect = nextInPool(myEffect);
 		if (currentEffect != null) {
 			currentEffect.transform.position = effectPosition;
+			currentEffect.SetActive(true);
+		}
+	}//	End public method playEffect
+
+	public void playEffect(Effect myEffect, Vector3 effectPosition, Vector3 effectScale) {
+		GameObject currentEffect = nextInPool(myEffect);
+		if (currentEffect != null) {
+			currentEffect.transform.position = effectPosition;
+			currentEffect.transform.localScale = effectScale;
 			currentEffect.SetActive(true);
 		}
 	}//	End public method playEffect

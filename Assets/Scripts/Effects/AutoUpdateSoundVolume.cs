@@ -8,7 +8,10 @@ using UnityEngine;
 public class AutoUpdateSoundVolume : MonoBehaviour {
 
 	private void OnEnable() {
-		GetComponent<AudioSource>().volume = Game.getSoundVolume();
-	}
-	
+		AudioSource[] sources = GetComponents<AudioSource>();
+		for (int i = 0, numSources = sources.Length; i < numSources; ++i) {
+			sources[i].volume = Game.getSoundVolume();
+		}
+	}//	End Unity method OnEnable
+
 }//	End public class AutoUpdateSoundVolume

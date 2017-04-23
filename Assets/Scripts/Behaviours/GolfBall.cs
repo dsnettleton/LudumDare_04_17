@@ -11,14 +11,16 @@ public class GolfBall : MonoBehaviour {
 	private const float MAX_LIFETIME = 10.0f;
 	private const float MAX_TIME_STOPPED = 0.3f;
 	private const float MIN_SQR_MAGNITUDE = 0.03f;
+	private const float SCREEN_BOUNDS_X = 58.0f;
+	private const float SCREEN_BOUNDS_Y = 32.0f;
 
 	private Rigidbody2D body2D;
 	private float lifetime = 0.0f;
 	private float timeStopped = 0.0f;
 	private bool spaceshipCollisionsDisabled = false;
 	private EffectsPool effectsPool;
-	private bool inScreenBounds = true;
 	private SpaceShip parentShip;
+	[SerializeField] private AudioSource bounceSound;
 
 	//	Unity methods
 
@@ -27,31 +29,21 @@ public class GolfBall : MonoBehaviour {
 		effectsPool = GameObject.Find("EffectsPool").GetComponent<EffectsPool>();
 	}//	End Unity method Awake
 
-	private void OnEnable() {
-		inScreenBounds = true;
-	}//	End Unity method OnEnable
-
 	private void OnCollisionEnter2D(Collision2D coll) {
 		int otherLayer = coll.gameObject.layer;
 		if (otherLayer == (int)Game.Layers.UFO) {
 			killMe();
+		} else if (otherLayer == (int)Game.Layers.Planets) {
+			bounceSound.volume = Game.getSoundVolume();
+			bounceSound.Play();
 		} else if (otherLayer == (int)Game.Layers.Hole) {
 			EventHandler.raiseEvent(GameEvent.LevelWon, parentShip.getNumStrokes());
 			killMe();
 		}
 	}//	End Unity method OnCollisionEnter2D
 
-	private void OnTriggerEnter2D(Collider2D other) {
-		if (other.gameObject.layer == (int)Game.Layers.ScreenBounds) {
-			inScreenBounds = true;
-		}
-	}//	End Unity method OnTriggerEnter2D
-
 	private void OnTriggerExit2D(Collider2D other) {
-		if (other.gameObject.layer == (int)Game.Layers.ScreenBounds) {
-			inScreenBounds = false;
-		} else if (other.gameObject.layer == (int)Game.Layers.GameBounds) {
-			inScreenBounds = false;
+		if (other.gameObject.layer == (int)Game.Layers.GameBounds) {
 			killMe();
 		}
 	}//	End Unity method OnTriggerExit2D
@@ -104,9 +96,15 @@ public class GolfBall : MonoBehaviour {
 		Physics2D.IgnoreLayerCollision((int)Game.Layers.UFO, (int)Game.Layers.GolfBall, false);
 	}//	End private method enableSpaceshipCollisions
 
+	public bool inScreenBounds() {
+		float posX = transform.position.x;
+		float posY = transform.position.y;
+		return (posX >= -SCREEN_BOUNDS_X && posX <= SCREEN_BOUNDS_X && posY >= -SCREEN_BOUNDS_Y && posY <= SCREEN_BOUNDS_Y);
+	}//	End public method inScreenBounds
+
 	public void killMe() {
 		effectsPool.playEffect(EffectsPool.Effect.BallExplosion, transform.position);
-		if (inScreenBounds) {
+		if (inScreenBounds()) {
 			Vector2 closestPosition = calcNearestWarp();
 			parentShip.warpToPosition(closestPosition);
 		} else {

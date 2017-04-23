@@ -16,6 +16,7 @@ public class GameMenu : EventObserver {
 	[SerializeField] private GameObject levelMenu;
 	[SerializeField] private GameObject optionsMenu;
 	[SerializeField] private GameObject pauseButton;
+	[SerializeField] private GameObject toolsPanel;
 
 	private AudioSource audioSource;
 	private AudioClip selectSound;
@@ -40,12 +41,23 @@ public class GameMenu : EventObserver {
 				break;
 			case GameEvent.LevelLoaded:
 				Game.setState(Game.State.Running);
+				Time.timeScale = 1.0f;
 				scoreDisplay.SetActive(true);
 				notifierPanel.SetActive(true);
 				victoryScreen.SetActive(false);
 				pauseMenu.SetActive(false);
 				mainMenu.SetActive(false);
 				pauseButton.SetActive(true);
+				toolsPanel.SetActive(true);
+				break;
+			case GameEvent.LevelWon:
+				Time.timeScale = 0.0f;
+				Game.setState(Game.State.Paused);
+				victoryScreen.SetActive(true);
+				toolsPanel.SetActive(false);
+				if (Game.currentLevel > Game.lastCompletedLevel) {
+					Game.lastCompletedLevel = Game.currentLevel;
+				}
 				break;
 		}//	End event type switch
 	}//	End public EventObserver method OnNotify
@@ -81,6 +93,7 @@ public class GameMenu : EventObserver {
 
 	public void returnToMenu() {
 		Game.setState(Game.State.Running);
+		Time.timeScale = 1.0f;
 		scoreDisplay.SetActive(false);
 		notifierPanel.SetActive(false);
 		victoryScreen.SetActive(false);
@@ -89,6 +102,7 @@ public class GameMenu : EventObserver {
 		levelMenu.SetActive(false);
 		optionsMenu.SetActive(false);
 		pauseButton.SetActive(false);
+		toolsPanel.SetActive(false);
 	}//	End public method returnToMenu
 
 	public void unpauseGame() {

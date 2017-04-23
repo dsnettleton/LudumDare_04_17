@@ -17,6 +17,9 @@ public class StrokeCounter : EventObserver {
 				//	data = numStrokes
 				strokeText.text = data.ToString();
 				break;
+			case GameEvent.LevelLoaded:
+				strokeText.text = "0";
+				break;
 		}//	End event type switch
 	}//	End EventObserver method OnNotify
 

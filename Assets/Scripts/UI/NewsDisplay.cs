@@ -14,6 +14,10 @@ public class NewsDisplay : MonoBehaviour {
 	[SerializeField] private float fadeDuration = 0.5f;
 	[SerializeField] private Color textColor;
 
+	public void hide() {
+		gameObject.SetActive(false);
+	}//	End public method hide
+
 	private IEnumerator messageCoroutine(string message) {
 		showStatic(message);
 		yield return new WaitForSeconds(messageDuration);

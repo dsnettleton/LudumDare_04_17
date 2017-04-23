@@ -30,8 +30,11 @@ public class GravitationalInfluence : MonoBehaviour {
 			GolfBall ballScript = other.gameObject.GetComponent<GolfBall>();
 			if (ballScript != null) {
 				float distanceScalar = Vector2.Distance((Vector2)transform.position, (Vector2)ballScript.transform.position);
-				distanceScalar = Mathf.Clamp01( (distanceScalar - insideRadius) / (influenceRadius - insideRadius));
-				ballScript.pull((Vector2)transform.position, gravStrength * distanceScalar);
+				distanceScalar = Mathf.Clamp01((distanceScalar - insideRadius) / (influenceRadius - insideRadius));
+				// float pullStrength = gravStrength;
+				float pullStrength = gravStrength * distanceScalar * Time.fixedDeltaTime;
+				// float pullStrength = gravStrength * distanceScalar * distanceScalar;
+				ballScript.pull((Vector2)transform.position, pullStrength);
 			}
 		}//	End if the object is a golfball
 	}//	End Unity method OnTriggerStay2D

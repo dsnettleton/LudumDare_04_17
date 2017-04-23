@@ -46,14 +46,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\AutoSave.cs" />
      <Compile Include="Assets\Scripts\Behaviours\GolfBall.cs" />
      <Compile Include="Assets\Scripts\Behaviours\GravitationalInfluence.cs" />
+     <Compile Include="Assets\Scripts\Behaviours\KillablePlanet.cs" />
      <Compile Include="Assets\Scripts\Behaviours\SpaceShip.cs" />
      <Compile Include="Assets\Scripts\Effects\AutoDisable.cs" />
      <Compile Include="Assets\Scripts\Effects\AutoPulse.cs" />
      <Compile Include="Assets\Scripts\Effects\AutoRotate.cs" />
      <Compile Include="Assets\Scripts\Effects\AutoUpdateSoundVolume.cs" />
      <Compile Include="Assets\Scripts\Effects\EffectsPool.cs" />
+     <Compile Include="Assets\Scripts\Effects\MusicPlayer.cs" />
      <Compile Include="Assets\Scripts\EventHandler.cs" />
      <Compile Include="Assets\Scripts\EventObserver.cs" />
      <Compile Include="Assets\Scripts\Game.cs" />
@@ -63,6 +66,8 @@
      <Compile Include="Assets\Scripts\UI\NotifierPanel.cs" />
      <Compile Include="Assets\Scripts\UI\OptionsMenu.cs" />
      <Compile Include="Assets\Scripts\UI\StrokeCounter.cs" />
+     <Compile Include="Assets\Scripts\UI\ToolTip.cs" />
+     <Compile Include="Assets\Scripts\UI\ToolsPanel.cs" />
      <None Include="Assets\Standard Assets\Effects\AntiAliasing\FXAA\Resources\FXAA3.cginc" />
      <None Include="Assets\Standard Assets\Effects\TemporalAntiAliasing\Resources\TemporalAntiAliasing.cginc" />
      <None Include="Assets\Standard Assets\Effects\MotionBlur\Resources\Reconstruction.cginc" />
