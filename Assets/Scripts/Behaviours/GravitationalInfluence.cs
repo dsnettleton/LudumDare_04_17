@@ -7,6 +7,7 @@ using UnityEngine;
 public class GravitationalInfluence : MonoBehaviour {
 
 	[SerializeField] private float gravStrength = 1.0f;
+	[SerializeField] private bool ignoreDistance = false;
 	private float influenceRadius;
 	private float insideRadius;
 
@@ -29,11 +30,12 @@ public class GravitationalInfluence : MonoBehaviour {
 		if (other.gameObject.layer == (int)Game.Layers.GolfBall) {
 			GolfBall ballScript = other.gameObject.GetComponent<GolfBall>();
 			if (ballScript != null) {
-				float distanceScalar = Vector2.Distance((Vector2)transform.position, (Vector2)ballScript.transform.position);
-				distanceScalar = Mathf.Clamp01((distanceScalar - insideRadius) / (influenceRadius - insideRadius));
-				// float pullStrength = gravStrength;
-				float pullStrength = gravStrength * distanceScalar * Time.fixedDeltaTime;
-				// float pullStrength = gravStrength * distanceScalar * distanceScalar;
+				float distanceScalar = 1.0f;
+				if (!ignoreDistance) {
+					distanceScalar = Vector2.Distance((Vector2)transform.position, (Vector2)ballScript.transform.position);
+					distanceScalar = 1.0f - Mathf.Clamp01((distanceScalar - insideRadius) / (influenceRadius - insideRadius));
+				}
+				float pullStrength = gravStrength * distanceScalar * distanceScalar * Time.fixedDeltaTime;
 				ballScript.pull((Vector2)transform.position, pullStrength);
 			}
 		}//	End if the object is a golfball

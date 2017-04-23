@@ -11,12 +11,6 @@ public class ToolsPanel : EventObserver {
 
 	private SpaceShip player;
 
-	//	Unity methods
-
-	private void Start() {
-		findPlayer();
-	}//	End Unity method Start
-
 	//	Additional methods
 
 	public override void OnNotify(GameEvent myEvent, int data) {
@@ -35,7 +29,9 @@ public class ToolsPanel : EventObserver {
 
 	private void findPlayer() {
 		GameObject ufo = GameObject.Find("UFO");
-		player = ufo.GetComponent<SpaceShip>();
+		if (ufo != null) {
+			player = ufo.GetComponent<SpaceShip>();
+		}
 	}//	End private method findPlayer
 
 	public void initiatePlanetKiller() {

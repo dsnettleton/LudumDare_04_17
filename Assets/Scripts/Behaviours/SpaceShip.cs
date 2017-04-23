@@ -26,6 +26,7 @@ public class SpaceShip : MonoBehaviour {
 	private bool liningUpShot = false;
 	private Camera mainCamera;
 	private int numStrokes = 0;
+	private int consecutiveStrokesAtFullPower = 0;
 
 	private AudioSource audioSource;
 	private AudioClip launchClip;
@@ -72,6 +73,7 @@ public class SpaceShip : MonoBehaviour {
 			Vector2 shotVector = getShotVector();
 			targetingReticule.gameObject.SetActive(true);
 			setTargetingReticule(shotVector);
+			Commentator.raiseEvent(CommentEvent.LiningUpShot);
 		}//	End if we are able to select a target
 	}//	End private Unity method OnMouseDown
 
@@ -97,6 +99,14 @@ public class SpaceShip : MonoBehaviour {
 		GolfBall myBall = nextInPool();
 		if (myBall == null) { return; }
 		incrementStrokes();
+		if (shotVector.sqrMagnitude > 0.99f) {
+			++consecutiveStrokesAtFullPower;
+			if (consecutiveStrokesAtFullPower >= Commentator.FULL_POWER_STROKES_THRESHOLD) {
+				Commentator.raiseEvent(CommentEvent.AlwaysFullPower);
+			}
+		} else {
+			consecutiveStrokesAtFullPower = 0;
+		}
 		playLaunchClip();
 		myBall.launch(transform.position, shotVector * LAUNCH_POWER, this);
 		Game.setState(Game.State.WaitingOnBall);
@@ -123,6 +133,9 @@ public class SpaceShip : MonoBehaviour {
 	public void incrementStrokes(int numToIncrement = 1) {
 		numStrokes += numToIncrement;
 		EventHandler.raiseEvent(GameEvent.StrokeTaken, numStrokes);
+		if (numStrokes >= Commentator.MANY_STROKES_THRESHOLD) {
+			Commentator.raiseEvent(CommentEvent.ManyStrokes);
+		}
 	}//	End public method incrementStrokes
 
 	private GolfBall nextInPool() {
@@ -179,6 +192,9 @@ public class SpaceShip : MonoBehaviour {
 
 	private IEnumerator warpCoroutine(Vector2 newPos) {
 		yield return new WaitForSeconds(WARP_DELAY);
+		if (Vector2.Distance(newPos, (Vector2)transform.position) < Commentator.SHORT_WARP_DISTANCE_THRESHOLD) {
+			Commentator.raiseEvent(CommentEvent.ShortWarp);
+		}
 		warpEffect.SetActive(true);
 		playWarpClip();
 		yield return new WaitForSeconds(WARP_DELAY);

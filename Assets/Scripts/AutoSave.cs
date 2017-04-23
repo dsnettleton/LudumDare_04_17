@@ -7,22 +7,21 @@ using System.IO;
 
 public class AutoSave : EventObserver {
 
-	private const int NUM_HEADER_LINES = 4;
+	private const int NUM_HEADER_LINES = 5;
 	private enum FileLines : int {
 		LastCompletedLevel,
 		SoundVolume,
 		MusicVolume,
+		CommentVolume,
 		MasterVolume
 	}//	End FileLines enum
-
-	private int[] levelStrokes;
 
 	//	Unity methods
 
 	private void Start() {
-		levelStrokes = new int[Game.NUM_LEVELS];
+		Game.levelStrokes = new int[Game.NUM_LEVELS];
 		for (int i = 0; i < Game.NUM_LEVELS; ++i) {
-			levelStrokes[i] = 0;
+			Game.levelStrokes[i] = 0;
 		}//	End for each level
 		loadData();
 	}//	End Unity method Start
@@ -38,8 +37,8 @@ public class AutoSave : EventObserver {
 					Game.lastCompletedLevel = Game.currentLevel;
 				}
 				int levelIndex = Game.currentLevel - 1;
-				if (levelIndex < Game.NUM_LEVELS && (levelStrokes[levelIndex] > data || levelStrokes[levelIndex] == 0)) {
-					levelStrokes[levelIndex] = data;
+				if (levelIndex < Game.NUM_LEVELS && (Game.levelStrokes[levelIndex] > data || Game.levelStrokes[levelIndex] == 0)) {
+					Game.levelStrokes[levelIndex] = data;
 				}
 				saveData();
 				break;
@@ -49,23 +48,25 @@ public class AutoSave : EventObserver {
 		}//	End event type switch
 	}//	End public EventObserver method OnNotify
 
-	public void loadData() {
+	private void loadData() {
 		string filePath = Application.persistentDataPath+"/saveFile.dat";
 		if (!File.Exists(filePath)) {
+			Game.firstRun = true;
 			return;
 		}
 		try {
 			string[] fileContents = File.ReadAllLines(filePath);
-			if (fileContents.Length < 4) {
+			if (fileContents.Length < NUM_HEADER_LINES) {
 				Debug.Log("Invalid settings file.");
 				return;
 			}
 			Game.lastCompletedLevel = int.Parse(fileContents[(int)FileLines.LastCompletedLevel]);
 			Game.setSoundVolume(float.Parse(fileContents[(int)FileLines.SoundVolume]));
 			Game.setMusicVolume(float.Parse(fileContents[(int)FileLines.MusicVolume]));
+			Game.setCommentVolume(float.Parse(fileContents[(int)FileLines.CommentVolume]));
 			Game.setMasterVolume(float.Parse(fileContents[(int)FileLines.MasterVolume]));
-			for (int i = NUM_HEADER_LINES, numLines = fileContents.Length; i < numLines && i < Game.NUM_LEVELS; ++i) {
-				levelStrokes[i] = int.Parse(fileContents[i]);
+			for (int i = NUM_HEADER_LINES, numLines = fileContents.Length; i < numLines && i < Game.NUM_LEVELS + NUM_HEADER_LINES; ++i) {
+				Game.levelStrokes[i - NUM_HEADER_LINES] = int.Parse(fileContents[i]);
 			}
 		}//	End try block
 		catch (System.UnauthorizedAccessException err) { Debug.LogError(err.Message); }
@@ -73,17 +74,18 @@ public class AutoSave : EventObserver {
 		catch (System.IO.DirectoryNotFoundException err) { Debug.LogError(err.Message); }
 		catch (System.ArgumentException err) { Debug.LogError(err.Message); }
 		catch (System.NotSupportedException err) { Debug.LogError(err.Message); }
-	}//	End public method loadData
+	}//	End private method loadData
 
-	public void saveData() {
+	private void saveData() {
 		string filePath = Application.persistentDataPath+"/saveFile.dat";
 		string[] fileContents = new string[NUM_HEADER_LINES + Game.NUM_LEVELS];
 		fileContents[0] = Game.lastCompletedLevel.ToString();
 		fileContents[1] = Game.getSoundVolumeUnscaled().ToString();
 		fileContents[2] = Game.getMusicVolumeUnscaled().ToString();
-		fileContents[3] = Game.getMasterVolume().ToString();
+		fileContents[3] = Game.getCommentVolumeUnscaled().ToString();
+		fileContents[4] = Game.getMasterVolume().ToString();
 		for (int i = 0; i < Game.NUM_LEVELS; ++i) {
-			fileContents[NUM_HEADER_LINES + i] = levelStrokes[i].ToString();
+			fileContents[NUM_HEADER_LINES + i] = Game.levelStrokes[i].ToString();
 		}
 		try {
 			File.WriteAllLines(filePath, fileContents);
@@ -93,6 +95,6 @@ public class AutoSave : EventObserver {
 		catch (System.IO.DirectoryNotFoundException err) { Debug.LogError(err.Message); }
 		catch (System.ArgumentException err) { Debug.LogError(err.Message); }
 		catch (System.NotSupportedException err) { Debug.LogError(err.Message); }
-	}//	End public method saveData
+	}//	End private method saveData
 
 }//	End public class AutoSave

@@ -27,17 +27,22 @@ public class Game {
 		Hole = 14
 	}//	End Layers enum
 
-	public const int NUM_LEVELS = 3;
-
-	public static int currentLevel = 2;
+	public const int NUM_LEVELS = 10;
+	public static int currentLevel = 0;
 	public static int lastCompletedLevel = 0;
+	public static int[] levelStrokes;
+
+	public static bool firstRun = false;
 
 	private static State currentState = State.Running;
 	private static State prevState = State.Running;
 	private static float soundVolume = 0.5f;
 	private static float musicVolume = 0.25f;
+	private static float commentVolume = 0.75f;
 	private static float masterVolume = 1.0f;
 
+	public static float getCommentVolume() { return commentVolume * masterVolume; }
+	public static float getCommentVolumeUnscaled() { return commentVolume; }
 	public static float getMasterVolume() { return masterVolume; }
 	public static float getMusicVolume() { return musicVolume * masterVolume; }
 	public static float getMusicVolumeUnscaled() { return musicVolume; }
@@ -51,19 +56,20 @@ public class Game {
 		currentState = tmpState;
 	}//	End public static method returnToPreviousState
 
+	public static void setCommentVolume(float value) {
+		commentVolume = value;
+	}//	End public static method setCommentVolume
+
 	public static void setMasterVolume(float value) {
 		masterVolume = value;
-		EventHandler.raiseEvent(GameEvent.VolumeChanged);
 	}//	End public static method setMasterVolume
 
 	public static void setMusicVolume(float value) {
 		musicVolume = value;
-		EventHandler.raiseEvent(GameEvent.VolumeChanged);
 	}//	End public static method setMusicVolume
 
 	public static void setSoundVolume(float value) {
 		soundVolume = value;
-		EventHandler.raiseEvent(GameEvent.VolumeChanged);
 	}//	End public static method setSoundVolume
 
 	public static void setState(State value) {

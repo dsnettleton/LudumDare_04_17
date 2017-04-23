@@ -17,6 +17,7 @@ public class GameMenu : EventObserver {
 	[SerializeField] private GameObject optionsMenu;
 	[SerializeField] private GameObject pauseButton;
 	[SerializeField] private GameObject toolsPanel;
+	[SerializeField] private GameObject firstRunScreen;
 
 	private AudioSource audioSource;
 	private AudioClip selectSound;
@@ -49,12 +50,16 @@ public class GameMenu : EventObserver {
 				mainMenu.SetActive(false);
 				pauseButton.SetActive(true);
 				toolsPanel.SetActive(true);
+				if (Game.firstRun) {
+					showFirstRunScreen();
+				}
 				break;
 			case GameEvent.LevelWon:
 				Time.timeScale = 0.0f;
 				Game.setState(Game.State.Paused);
 				victoryScreen.SetActive(true);
 				toolsPanel.SetActive(false);
+				pauseButton.SetActive(false);
 				if (Game.currentLevel > Game.lastCompletedLevel) {
 					Game.lastCompletedLevel = Game.currentLevel;
 				}
@@ -62,10 +67,19 @@ public class GameMenu : EventObserver {
 		}//	End event type switch
 	}//	End public EventObserver method OnNotify
 
+	public void hideFirstRunScreen() {
+		if (firstRunScreen != null) {
+			firstRunScreen.SetActive(false);
+			Game.setState(Game.State.Running);
+			Time.timeScale = 1.0f;
+		}
+	}//	End public method hideFirstRunScreen
+
 	public void pauseGame() {
 		Time.timeScale = 0.0f;
 		pauseMenu.SetActive(true);
 		Game.setState(Game.State.Paused);
+		Commentator.raiseEvent(CommentEvent.GamePaused);
 	}//	End public method pauseGame
 
 	public void playLevelSelectSound() {
@@ -104,6 +118,15 @@ public class GameMenu : EventObserver {
 		pauseButton.SetActive(false);
 		toolsPanel.SetActive(false);
 	}//	End public method returnToMenu
+
+	public void showFirstRunScreen() {
+		if (firstRunScreen != null) {
+			Game.firstRun = false;
+			firstRunScreen.SetActive(true);
+			Time.timeScale = 0.0f;
+			Game.setState(Game.State.Paused);
+		}
+	}//	End public method showFirstRunScreen
 
 	public void unpauseGame() {
 		Time.timeScale = 1.0f;

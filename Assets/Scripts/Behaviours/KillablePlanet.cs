@@ -14,10 +14,10 @@ public class KillablePlanet : MonoBehaviour {
 
 	//	Unity methods
 
-	private void Awake() {
+	private void Start() {
 		mySprite = gameObject.GetComponentInChildren<SpriteRenderer>();
 		effectsPool = GameObject.Find("EffectsPool").GetComponent<EffectsPool>();
-	}//	End Unity method Awake
+	}//	End Unity method Start
 
 	private void OnMouseEnter() {
 		if (Game.getState() == Game.State.SelectingPlanet) {
@@ -37,7 +37,6 @@ public class KillablePlanet : MonoBehaviour {
 		if (Game.getState() == Game.State.SelectingPlanet && hilighting) {
 			mySprite.color = Color.white;
 			destroyMe();
-			EventHandler.raiseEvent(GameEvent.PlanetDestroyed);
 		}
 	}//	End Unity method OnMouseUpAsButton
 
@@ -46,6 +45,8 @@ public class KillablePlanet : MonoBehaviour {
 	private void destroyMe() {
 		effectsPool.playEffect(EffectsPool.Effect.PlanetDestroyed, transform.position, transform.localScale);
 		gameObject.SetActive(false);
+		EventHandler.raiseEvent(GameEvent.PlanetDestroyed);
+		Commentator.raiseEvent(CommentEvent.PlanetDestroyed);
 	}//	End private method destroyMe
 
 }//	End public class KillablePlanet

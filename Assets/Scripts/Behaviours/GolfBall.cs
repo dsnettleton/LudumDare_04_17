@@ -32,12 +32,22 @@ public class GolfBall : MonoBehaviour {
 	private void OnCollisionEnter2D(Collision2D coll) {
 		int otherLayer = coll.gameObject.layer;
 		if (otherLayer == (int)Game.Layers.UFO) {
+			Commentator.raiseEvent(CommentEvent.BallHitsPlayer);
 			killMe();
-		} else if (otherLayer == (int)Game.Layers.Planets) {
-			bounceSound.volume = Game.getSoundVolume();
-			bounceSound.Play();
+		} else if (otherLayer == (int)Game.Layers.Planets && coll.gameObject.name != "Sun") {
+			Commentator.raiseEvent(CommentEvent.BallHitsPlanet);
+			if (!bounceSound.isPlaying) {
+				bounceSound.volume = Game.getSoundVolume();
+				bounceSound.Play();
+			}
 		} else if (otherLayer == (int)Game.Layers.Hole) {
-			EventHandler.raiseEvent(GameEvent.LevelWon, parentShip.getNumStrokes());
+			int numStrokes = parentShip.getNumStrokes();
+			EventHandler.raiseEvent(GameEvent.LevelWon, numStrokes);
+			if (numStrokes == 1) {
+				Commentator.raiseEvent(CommentEvent.HoleInOne);
+			} else {
+				Commentator.raiseEvent(CommentEvent.LevelWon);
+			}
 			killMe();
 		}
 	}//	End Unity method OnCollisionEnter2D
@@ -56,12 +66,14 @@ public class GolfBall : MonoBehaviour {
 		if (body2D.velocity.sqrMagnitude <= MIN_SQR_MAGNITUDE) {
 			timeStopped += Time.deltaTime;
 			if (timeStopped >= MAX_TIME_STOPPED) {
+				Commentator.raiseEvent(CommentEvent.BallStops);
 				killMe();
 			}
 		} else {
 			timeStopped = 0.0f;
 		}
 		if (lifetime >= MAX_LIFETIME) {
+			Commentator.raiseEvent(CommentEvent.BallTimeout);
 			killMe();
 		}
 	}//	End Unity method Update
@@ -109,6 +121,7 @@ public class GolfBall : MonoBehaviour {
 			parentShip.warpToPosition(closestPosition);
 		} else {
 			EventHandler.raiseEvent(GameEvent.BallOutOfBounds);
+			Commentator.raiseEvent(CommentEvent.BallOutOfBounds);
 		}
 		Game.setState(Game.State.Running);
 		gameObject.SetActive(false);

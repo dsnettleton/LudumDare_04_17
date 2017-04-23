@@ -10,6 +10,9 @@ public class OptionsMenu : MonoBehaviour {
 	[SerializeField] Slider masterVolumeSlider;
 	[SerializeField] Slider musicVolumeSlider;
 	[SerializeField] Slider soundVolumeSlider;
+	[SerializeField] Slider commentVolumeSlider;
+
+	private float prevCommentVolume = 0.5f;
 
 	//	Unity methods
 
@@ -18,6 +21,31 @@ public class OptionsMenu : MonoBehaviour {
 	}//	End Unity method OnEnable
 
 	//	Additioanl methods
+
+	public void beginCommentVolume() {
+		prevCommentVolume = commentVolumeSlider.value;
+	}//	End public method beginCommentVolume
+
+	public void endCommentVolume() {
+		float currentCommentVolume = commentVolumeSlider.value;
+		if (currentCommentVolume > prevCommentVolume) {
+			Commentator.raiseEvent(CommentEvent.CommentsTurnedUp);
+		} else if (currentCommentVolume < prevCommentVolume) {
+			Commentator.raiseEvent(CommentEvent.CommentsTurnedDown);
+		}
+		prevCommentVolume = currentCommentVolume;
+		endVolumeChange();
+	}//	End public method endCommentVolume
+
+	public void endVolumeChange() {
+		EventHandler.raiseEvent(GameEvent.VolumeChanged);
+	}//	End public method endVolumeChange
+
+	public void setCommentVolume() {
+		if (commentVolumeSlider != null) {
+			Game.setCommentVolume(commentVolumeSlider.value);
+		}
+	}//	End public method setCommentVolume
 
 	public void setMasterVolume() {
 		if (masterVolumeSlider != null) {
@@ -40,6 +68,10 @@ public class OptionsMenu : MonoBehaviour {
 		}
 		if (soundVolumeSlider != null) {
 			soundVolumeSlider.value = Game.getSoundVolumeUnscaled();
+		}
+		if (commentVolumeSlider != null) {
+			commentVolumeSlider.value = Game.getCommentVolumeUnscaled();
+			prevCommentVolume = commentVolumeSlider.value;
 		}
 	}//	End private method setSliderValues
 
